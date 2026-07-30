@@ -19,18 +19,43 @@ namespace PokerDice
 
         [SerializeField] public DiceAndOutcome[] diceAndOutcomeArray;
 
+        private int settledCount;
+
         public event Action OnRollStarted;
+        public event Action<PokerDiceHand> OnHandEvaluated;
 
         void Start()
         {
             for (int i = 0; i < diceAndOutcomeArray.Length; i++)
             {
                 diceAndOutcomeArray[i].outcome = 1;
+                diceAndOutcomeArray[i].dice.OnRollEnd.AddListener(HandleDiceSettled);
+            }
+        }
+
+        private void HandleDiceSettled(int _)
+        {
+            settledCount++;
+            if (settledCount >= diceAndOutcomeArray.Length)
+            {
+                OnHandEvaluated?.Invoke(EvaluateHand());
+            }
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var diceAndOutcome in diceAndOutcomeArray)
+            {
+                if (diceAndOutcome.dice != null)
+                {
+                    diceAndOutcome.dice.OnRollEnd.RemoveListener(HandleDiceSettled);
+                }
             }
         }
 
         public void RollAll()
         {
+            settledCount = 0;
             OnRollStarted?.Invoke();
 
             foreach (var diceAndOutcome in diceAndOutcomeArray)
