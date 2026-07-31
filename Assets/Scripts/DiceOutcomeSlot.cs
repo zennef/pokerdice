@@ -9,7 +9,7 @@ namespace PokerDice
 
         public void SetOutcome(float outcome)
         {
-            rollMultipleDice.diceAndOutcomeArray[index].outcome = (int)outcome;
+            rollMultipleDice.SetOutcome(index, (int)outcome);
         }
     }
 }

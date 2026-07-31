@@ -1,84 +1,50 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PredictedDice;
 using UnityEngine;
 
 namespace PokerDice
 {
     public class RollMultipleDice : MonoBehaviour
     {
+        [SerializeField] private int diceCount = 5;
+        [SerializeField] private MonoBehaviour diceRigSource;
 
-        [Serializable]
-        public struct DiceAndOutcome
-        {
-            public Dice dice;
-            public bool random;
-            [Range(1, 6)] public int outcome;
-        }
-
-        [SerializeField] public DiceAndOutcome[] diceAndOutcomeArray;
-
-        private int settledCount;
+        private IDiceRig _diceRig;
+        private int[] _outcomes;
 
         public event Action OnRollStarted;
         public event Action<PokerDiceHand> OnHandEvaluated;
 
-        void Start()
+        void Awake()
         {
-            for (int i = 0; i < diceAndOutcomeArray.Length; i++)
+            _diceRig = diceRigSource as IDiceRig;
+            if (_diceRig == null)
             {
-                diceAndOutcomeArray[i].outcome = 1;
-                diceAndOutcomeArray[i].dice.OnRollEnd.AddListener(HandleDiceSettled);
+                Debug.LogError("diceRigSource is null or does not implement IDiceRig.");
+            }
+
+            _outcomes = new int[diceCount];
+            for (int i = 0; i < _outcomes.Length; i++)
+            {
+                _outcomes[i] = 1;
             }
         }
 
-        private void HandleDiceSettled(int _)
+        public void SetOutcome(int index, int outcome)
         {
-            settledCount++;
-            if (settledCount >= diceAndOutcomeArray.Length)
-            {
-                OnHandEvaluated?.Invoke(EvaluateHand());
-            }
-        }
-
-        private void OnDestroy()
-        {
-            foreach (var diceAndOutcome in diceAndOutcomeArray)
-            {
-                if (diceAndOutcome.dice != null)
-                {
-                    diceAndOutcome.dice.OnRollEnd.RemoveListener(HandleDiceSettled);
-                }
-            }
+            _outcomes[index] = outcome;
         }
 
         public void RollAll()
         {
-            settledCount = 0;
             OnRollStarted?.Invoke();
-
-            foreach (var diceAndOutcome in diceAndOutcomeArray)
-            {
-                diceAndOutcome.dice.RollDiceWithOutCome(
-                    GetRandomForcedRollData(diceAndOutcome.random ? RollData.RandomFace : diceAndOutcome.outcome));
-            }
-
-            ProjectionSceneManager.Instance.Simulate();
-            foreach (DiceAndOutcome diceAndOutcome in diceAndOutcomeArray)
-            {
-                diceAndOutcome.dice.PlaySimulation();
-            }
+            _diceRig.RollAll(_outcomes, HandleAllSettled);
         }
 
-        private RollData GetRandomForcedRollData(int outcome = RollData.RandomFace)
+        private void HandleAllSettled()
         {
-            return new RollData
-            {
-                faceValue = outcome,
-                force = DiceForceUtility.GetRandomForce(),
-                torque = DiceForceUtility.GetRandomForce()
-            };
+            OnHandEvaluated?.Invoke(EvaluateHand());
         }
 
         public enum PokerDiceHand
@@ -97,7 +63,7 @@ namespace PokerDice
         public PokerDiceHand EvaluateHand()
         {
             // Extract the outcome values from the array of structs
-            int[] outcomes = diceAndOutcomeArray.Select(d => d.outcome).ToArray();
+            int[] outcomes = _outcomes;
 
             // Count occurrences of each die value
             var counts = outcomes.GroupBy(d => d)
@@ -159,10 +125,10 @@ namespace PokerDice
             }
 
             return (distinctSorted[4] - distinctSorted[0] == 4) && (
-                distinctSorted.Contains(2) && 
-                distinctSorted.Contains(3) && 
-                distinctSorted.Contains(4) && 
-                distinctSorted.Contains(5) && 
+                distinctSorted.Contains(2) &&
+                distinctSorted.Contains(3) &&
+                distinctSorted.Contains(4) &&
+                distinctSorted.Contains(5) &&
                 distinctSorted.Contains(6)
             );
         }
@@ -176,10 +142,10 @@ namespace PokerDice
             }
 
             return (distinctSorted[4] - distinctSorted[0] == 4) && (
-                distinctSorted.Contains(1) && 
-                distinctSorted.Contains(2) && 
-                distinctSorted.Contains(3) && 
-                distinctSorted.Contains(4) && 
+                distinctSorted.Contains(1) &&
+                distinctSorted.Contains(2) &&
+                distinctSorted.Contains(3) &&
+                distinctSorted.Contains(4) &&
                 distinctSorted.Contains(5)
             );
         }
