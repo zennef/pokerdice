@@ -2303,22 +2303,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0fdfa5d4b3a39042948be48ce751644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  diceAndOutcomeArray:
-  - dice: {fileID: 2130571690}
-    random: 0
-    outcome: 0
-  - dice: {fileID: 515715606}
-    random: 0
-    outcome: 0
-  - dice: {fileID: 1172280683}
-    random: 0
-    outcome: 0
-  - dice: {fileID: 186355638}
-    random: 0
-    outcome: 0
-  - dice: {fileID: 1709221916}
-    random: 0
-    outcome: 0
+  diceCount: 5
+  diceRigSource: {fileID: 1791689467}
 --- !u!1 &702745249
 GameObject:
   m_ObjectHideFlags: 0
@@ -4223,6 +4209,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1787305997}
   m_CullTransparentMesh: 1
+--- !u!1 &1791689466
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1791689468}
+  - component: {fileID: 1791689467}
+  m_Layer: 0
+  m_Name: DiceRig
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1791689467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791689466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08883fbb31ed0e1498d7bc1c2fab9f7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PokerDice.RiggedDiceRig
+  dice:
+  - {fileID: 2130571690}
+  - {fileID: 515715606}
+  - {fileID: 1172280683}
+  - {fileID: 186355638}
+  - {fileID: 1709221916}
+--- !u!4 &1791689468
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791689466}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.81747, y: 3.5949, z: 10.45999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1828816588
 GameObject:
   m_ObjectHideFlags: 0
@@ -5201,3 +5237,4 @@ SceneRoots:
   - {fileID: 494017998}
   - {fileID: 1154823182}
   - {fileID: 1691822027}
+  - {fileID: 1791689468}
