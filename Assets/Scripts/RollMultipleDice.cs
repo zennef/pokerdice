@@ -58,6 +58,17 @@ namespace PokerDice
             _diceRig.RollAll(_outcomes, HandleAllSettled);
         }
 
+        public void RollSubset(bool[] shouldRoll, int[] targetFaces)
+        {
+            for (int i = 0; i < targetFaces.Length; i++)
+            {
+                SetOutcome(i, targetFaces[i]);
+            }
+
+            OnRollStarted?.Invoke();
+            _diceRig.RollSubset(shouldRoll, _outcomes, HandleAllSettled);
+        }
+
         private void HandleAllSettled()
         {
             OnHandEvaluated?.Invoke(EvaluateHand());

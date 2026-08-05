@@ -126,15 +126,25 @@ namespace PokerDice
             skipButton.interactable = false;
             SetAllSelectButtonsInteractable(false);
 
+            var shouldRoll = new bool[dieSlots.Length];
             var targetFaces = new int[dieSlots.Length];
             for (int i = 0; i < dieSlots.Length; i++)
             {
                 var slot = dieSlots[i];
                 slot.heldMarker.SetActive(false);
                 slot.selectButton.targetGraphic.color = normalColor;
-                slot.faceLabel.text = "–";
 
-                targetFaces[i] = _held[i] ? _lastSettledFaces[i] : UnityEngine.Random.Range(1, 7);
+                shouldRoll[i] = !_held[i];
+                if (shouldRoll[i])
+                {
+                    slot.faceLabel.text = "–";
+                    targetFaces[i] = UnityEngine.Random.Range(1, 7);
+                }
+                else
+                {
+                    targetFaces[i] = _lastSettledFaces[i];
+                }
+
                 _held[i] = false;
             }
 
@@ -147,7 +157,7 @@ namespace PokerDice
                 _hasRolledOnce = true;
             }
 
-            rollMultipleDice.RollToTargets(targetFaces);
+            rollMultipleDice.RollSubset(shouldRoll, targetFaces);
         }
 
         private void HandleDieSettled(int index, int faceValue)

@@ -10,6 +10,7 @@ namespace PokerDice
         [SerializeField] private Dice[] dice;
 
         private int _settledCount;
+        private int _expectedSettledCount;
         private Action _onAllSettled;
         private UnityAction<int>[] _dieSettledListeners;
 
@@ -51,6 +52,7 @@ namespace PokerDice
             }
 
             _settledCount = 0;
+            _expectedSettledCount = dice.Length;
             _onAllSettled = onAllSettled;
 
             for (int i = 0; i < dice.Length; i++)
@@ -66,12 +68,57 @@ namespace PokerDice
             }
         }
 
+        public void RollSubset(bool[] shouldRoll, int[] outcomes, Action onAllSettled)
+        {
+            if (shouldRoll.Length != dice.Length || outcomes.Length != dice.Length)
+            {
+                Debug.LogError("shouldRoll or outcomes array length does not match dice array length.");
+                return;
+            }
+
+            _settledCount = 0;
+            _onAllSettled = onAllSettled;
+
+            _expectedSettledCount = 0;
+            for (int i = 0; i < shouldRoll.Length; i++)
+            {
+                if (shouldRoll[i])
+                {
+                    _expectedSettledCount++;
+                }
+            }
+
+            if (_expectedSettledCount == 0)
+            {
+                _onAllSettled?.Invoke();
+                return;
+            }
+
+            for (int i = 0; i < dice.Length; i++)
+            {
+                if (shouldRoll[i])
+                {
+                    dice[i].RollDiceWithOutCome(GetRandomForcedRollData(outcomes[i]));
+                }
+            }
+
+            ProjectionSceneManager.Instance.Simulate();
+
+            for (int i = 0; i < dice.Length; i++)
+            {
+                if (shouldRoll[i])
+                {
+                    dice[i].PlaySimulation();
+                }
+            }
+        }
+
         private void HandleDieSettled(int index, int faceValue)
         {
             OnDieSettled?.Invoke(index, faceValue);
 
             _settledCount++;
-            if (_settledCount >= dice.Length)
+            if (_settledCount >= _expectedSettledCount)
             {
                 _onAllSettled?.Invoke();
             }

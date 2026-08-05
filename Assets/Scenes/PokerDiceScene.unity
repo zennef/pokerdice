@@ -201,19 +201,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 16645517}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 695466831}
-        m_TargetAssemblyTypeName: PredictedDice.Demo.RollMultipleDiceSynced, Assembly-CSharp
-        m_MethodName: RollAll
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &16645517
 MonoBehaviour:
   m_ObjectHideFlags: 0
