@@ -15,6 +15,7 @@ namespace PokerDice
 
         public event Action OnRollStarted;
         public event Action<PokerDiceHand> OnHandEvaluated;
+        public event Action<int, int> OnDieSettled;
 
         void Awake()
         {
@@ -22,6 +23,10 @@ namespace PokerDice
             if (_diceRig == null)
             {
                 Debug.LogError("diceRigSource is null or does not implement IDiceRig.");
+            }
+            else
+            {
+                _diceRig.OnDieSettled += HandleDieSettled;
             }
 
             _outcomes = new int[diceCount];
@@ -42,9 +47,25 @@ namespace PokerDice
             _diceRig.RollAll(_outcomes, HandleAllSettled);
         }
 
+        public void RollToTargets(int[] targetFaces)
+        {
+            for (int i = 0; i < targetFaces.Length; i++)
+            {
+                SetOutcome(i, targetFaces[i]);
+            }
+
+            OnRollStarted?.Invoke();
+            _diceRig.RollAll(_outcomes, HandleAllSettled);
+        }
+
         private void HandleAllSettled()
         {
             OnHandEvaluated?.Invoke(EvaluateHand());
+        }
+
+        private void HandleDieSettled(int index, int faceValue)
+        {
+            OnDieSettled?.Invoke(index, faceValue);
         }
 
         public enum PokerDiceHand

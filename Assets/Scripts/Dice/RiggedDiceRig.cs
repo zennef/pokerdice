@@ -1,6 +1,7 @@
 using System;
 using PredictedDice;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace PokerDice
 {
@@ -10,22 +11,33 @@ namespace PokerDice
 
         private int _settledCount;
         private Action _onAllSettled;
+        private UnityAction<int>[] _dieSettledListeners;
+
+        public event Action<int, int> OnDieSettled;
 
         private void Start()
         {
-            foreach (var die in dice)
+            _dieSettledListeners = new UnityAction<int>[dice.Length];
+            for (int i = 0; i < dice.Length; i++)
             {
-                die.OnRollEnd.AddListener(HandleDieSettled);
+                int index = i;
+                _dieSettledListeners[i] = faceValue => HandleDieSettled(index, faceValue);
+                dice[i].OnRollEnd.AddListener(_dieSettledListeners[i]);
             }
         }
 
         private void OnDestroy()
         {
-            foreach (var die in dice)
+            if (_dieSettledListeners == null)
             {
-                if (die != null)
+                return;
+            }
+
+            for (int i = 0; i < dice.Length; i++)
+            {
+                if (dice[i] != null)
                 {
-                    die.OnRollEnd.RemoveListener(HandleDieSettled);
+                    dice[i].OnRollEnd.RemoveListener(_dieSettledListeners[i]);
                 }
             }
         }
@@ -54,8 +66,10 @@ namespace PokerDice
             }
         }
 
-        private void HandleDieSettled(int _)
+        private void HandleDieSettled(int index, int faceValue)
         {
+            OnDieSettled?.Invoke(index, faceValue);
+
             _settledCount++;
             if (_settledCount >= dice.Length)
             {
