@@ -117,6 +117,7 @@ namespace PokerDice
                 slot.heldMarker.SetActive(false);
                 slot.selectButton.targetGraphic.color = normalColor;
                 slot.faceLabel.text = "–";
+                slot.dieOutcomeSlot.SetHeld(false);
             }
         }
 
@@ -133,12 +134,15 @@ namespace PokerDice
                 var slot = dieSlots[i];
                 slot.heldMarker.SetActive(false);
                 slot.selectButton.targetGraphic.color = normalColor;
+                slot.dieOutcomeSlot.SetHeld(false);
 
                 shouldRoll[i] = !_held[i];
                 if (shouldRoll[i])
                 {
                     slot.faceLabel.text = "–";
-                    targetFaces[i] = UnityEngine.Random.Range(1, 7);
+                    targetFaces[i] = slot.dieOutcomeSlot.IsRandom
+                        ? UnityEngine.Random.Range(1, 7)
+                        : slot.dieOutcomeSlot.ForcedValue;
                 }
                 else
                 {
@@ -188,6 +192,11 @@ namespace PokerDice
             var slot = dieSlots[index];
             slot.heldMarker.SetActive(_held[index]);
             slot.selectButton.targetGraphic.color = _held[index] ? heldColor : normalColor;
+            slot.dieOutcomeSlot.SetHeld(_held[index]);
+            if (_held[index])
+            {
+                slot.dieOutcomeSlot.SyncDisplayedValue(_lastSettledFaces[index]);
+            }
 
             if (AllHeld())
             {
@@ -210,6 +219,7 @@ namespace PokerDice
                 var slot = dieSlots[i];
                 slot.heldMarker.SetActive(false);
                 slot.selectButton.targetGraphic.color = normalColor;
+                slot.dieOutcomeSlot.SetHeld(false);
             }
 
             OnPlayerFinishedTurn?.Invoke();

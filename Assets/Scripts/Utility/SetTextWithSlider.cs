@@ -26,5 +26,13 @@ namespace PokerDice
         {
             _text.text = value.ToString("F0");
         }
+
+        public void Refresh()
+        {
+            if (_slider != null)
+            {
+                UpdateText(_slider.value);
+            }
+        }
     }
 }
