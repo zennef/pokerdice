@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace PokerDice
 {
-    public class RiggedDiceRig : MonoBehaviour, IDiceRig
+    public class RiggedDiceAdapter : MonoBehaviour, IDiceRoller
     {
         [SerializeField] private Dice[] dice;
 

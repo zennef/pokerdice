@@ -20,23 +20,13 @@ namespace PokerDice
         [SerializeField] private Button skipButton;
         [SerializeField] private DieUISlot[] dieSlots = new DieUISlot[5];
         [SerializeField] private RollMultipleDice rollMultipleDice;
-        [SerializeField] private int maxRerolls = 1; // bump later to allow multiple rerolls
         [SerializeField] private Color heldColor = new Color(0.4f, 0.8f, 0.4f);
         [SerializeField] private Color normalColor = Color.white;
 
         private bool[] _held = new bool[5];
         private int[] _lastSettledFaces = new int[5];
-        private int _rerollsUsed;
-        private bool _hasRolledOnce;
 
         public event Action OnPlayerFinishedTurn;
-
-        public int RerollsUsed => _rerollsUsed;
-        public int MaxRerolls
-        {
-            get => maxRerolls;
-            set => maxRerolls = value;
-        }
 
         private void Start()
         {
@@ -152,15 +142,6 @@ namespace PokerDice
                 _held[i] = false;
             }
 
-            if (_hasRolledOnce)
-            {
-                _rerollsUsed++;
-            }
-            else
-            {
-                _hasRolledOnce = true;
-            }
-
             rollMultipleDice.RollSubset(shouldRoll, targetFaces);
         }
 
@@ -173,17 +154,6 @@ namespace PokerDice
         private void HandleHandEvaluated(RollMultipleDice.PokerDiceHand hand)
         {
             skipButton.interactable = true;
-
-            if (_rerollsUsed >= maxRerolls)
-            {
-                rollButton.interactable = false;
-                SetAllSelectButtonsInteractable(false);
-            }
-            else
-            {
-                rollButton.interactable = true;
-                SetAllSelectButtonsInteractable(true);
-            }
         }
 
         private void OnDieButtonClicked(int index)
@@ -198,14 +168,7 @@ namespace PokerDice
                 slot.dieOutcomeSlot.SyncDisplayedValue(_lastSettledFaces[index]);
             }
 
-            if (AllHeld())
-            {
-                rollButton.interactable = false;
-            }
-            else if (_rerollsUsed < maxRerolls)
-            {
-                rollButton.interactable = true;
-            }
+            rollButton.interactable = !AllHeld();
         }
 
         private void OnSkipClicked()
@@ -232,15 +195,19 @@ namespace PokerDice
                 _held[i] = false;
             }
 
-            _rerollsUsed = 0;
-            _hasRolledOnce = false;
-
             ApplyInitialButtonState();
         }
 
         public void LockRollButton()
         {
             rollButton.interactable = false;
+            SetAllSelectButtonsInteractable(false);
+        }
+
+        public void UnlockRollButton()
+        {
+            rollButton.interactable = true;
+            SetAllSelectButtonsInteractable(true);
         }
 
         private bool AllHeld()

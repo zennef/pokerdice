@@ -2,7 +2,7 @@ using System;
 
 namespace PokerDice
 {
-    public interface IDiceRig
+    public interface IDiceRoller
     {
         event Action<int, int> OnDieSettled;
         void RollAll(int[] outcomes, Action onAllSettled);

@@ -10,7 +10,7 @@ namespace PokerDice
         [SerializeField] private int diceCount = 5;
         [SerializeField] private MonoBehaviour diceRigSource;
 
-        private IDiceRig _diceRig;
+        private IDiceRoller _diceRoller;
         private int[] _outcomes;
 
         public event Action OnRollStarted;
@@ -19,14 +19,14 @@ namespace PokerDice
 
         void Awake()
         {
-            _diceRig = diceRigSource as IDiceRig;
-            if (_diceRig == null)
+            _diceRoller = diceRigSource as IDiceRoller;
+            if (_diceRoller == null)
             {
-                Debug.LogError("diceRigSource is null or does not implement IDiceRig.");
+                Debug.LogError("diceRigSource is null or does not implement IDiceRoller.");
             }
             else
             {
-                _diceRig.OnDieSettled += HandleDieSettled;
+                _diceRoller.OnDieSettled += HandleDieSettled;
             }
 
             _outcomes = new int[diceCount];
@@ -44,7 +44,7 @@ namespace PokerDice
         public void RollAll()
         {
             OnRollStarted?.Invoke();
-            _diceRig.RollAll(_outcomes, HandleAllSettled);
+            _diceRoller.RollAll(_outcomes, HandleAllSettled);
         }
 
         public void RollToTargets(int[] targetFaces)
@@ -55,7 +55,7 @@ namespace PokerDice
             }
 
             OnRollStarted?.Invoke();
-            _diceRig.RollAll(_outcomes, HandleAllSettled);
+            _diceRoller.RollAll(_outcomes, HandleAllSettled);
         }
 
         public void RollSubset(bool[] shouldRoll, int[] targetFaces)
@@ -66,7 +66,7 @@ namespace PokerDice
             }
 
             OnRollStarted?.Invoke();
-            _diceRig.RollSubset(shouldRoll, _outcomes, HandleAllSettled);
+            _diceRoller.RollSubset(shouldRoll, _outcomes, HandleAllSettled);
         }
 
         private void HandleAllSettled()

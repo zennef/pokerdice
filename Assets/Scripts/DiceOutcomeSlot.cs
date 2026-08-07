@@ -47,6 +47,11 @@ namespace PokerDice
                 randomToggle.onValueChanged.AddListener(HandleRandomToggleChanged);
             }
 
+            if (outcomeSlider != null)
+            {
+                outcomeSlider.onValueChanged.AddListener(SetOutcome);
+            }
+
             IsRandom = true;
             if (outcomeSlider != null)
             {
@@ -61,6 +66,11 @@ namespace PokerDice
             if (randomToggle != null)
             {
                 randomToggle.onValueChanged.RemoveListener(HandleRandomToggleChanged);
+            }
+
+            if (outcomeSlider != null)
+            {
+                outcomeSlider.onValueChanged.RemoveListener(SetOutcome);
             }
         }
 
