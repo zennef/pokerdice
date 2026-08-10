@@ -26,7 +26,82 @@ namespace PokerDice
         private bool[] _held = new bool[5];
         private int[] _lastSettledFaces = new int[5];
 
+        private bool _cachedRollInteractable;
+        private bool _cachedSkipInteractable;
+        private bool[] _cachedSelectInteractable;
+        private bool _hasCachedState;
+
         public event Action OnPlayerFinishedTurn;
+
+        private void OnEnable()
+        {
+            if (TurnAuthority.Instance == null)
+            {
+                Debug.LogWarning("PlayerDiceSelectionController: TurnAuthority.Instance is null in OnEnable — skipping subscription.");
+                return;
+            }
+
+            TurnAuthority.Instance.OnTurnOwnerChanged += HandleTurnOwnerChanged;
+            RefreshInputInteractable();
+        }
+
+        private void OnDisable()
+        {
+            if (TurnAuthority.Instance == null)
+            {
+                return;
+            }
+
+            TurnAuthority.Instance.OnTurnOwnerChanged -= HandleTurnOwnerChanged;
+        }
+
+        private void HandleTurnOwnerChanged(TurnOwner newOwner)
+        {
+            RefreshInputInteractable();
+        }
+
+        private bool IsPlayerTurn => TurnAuthority.Instance.CurrentOwner == TurnOwner.Player;
+
+        // Stopgap cache/restore approach: a real turn-phase concept (pre-roll / selecting /
+        // hand-evaluated) likely belongs in GameFlowManager once it exists, at which point this
+        // caching can probably be replaced by deriving interactable state directly from that phase.
+        private void RefreshInputInteractable()
+        {
+            bool isPlayerTurn = IsPlayerTurn;
+
+            if (_cachedSelectInteractable == null || _cachedSelectInteractable.Length != dieSlots.Length)
+            {
+                _cachedSelectInteractable = new bool[dieSlots.Length];
+            }
+
+            if (!isPlayerTurn)
+            {
+                _cachedRollInteractable = rollButton.interactable;
+                _cachedSkipInteractable = skipButton.interactable;
+                for (int i = 0; i < dieSlots.Length; i++)
+                {
+                    _cachedSelectInteractable[i] = dieSlots[i].selectButton.interactable;
+                }
+
+                _hasCachedState = true;
+
+                rollButton.interactable = false;
+                skipButton.interactable = false;
+                for (int i = 0; i < dieSlots.Length; i++)
+                {
+                    dieSlots[i].selectButton.interactable = false;
+                }
+            }
+            else if (_hasCachedState)
+            {
+                rollButton.interactable = _cachedRollInteractable;
+                skipButton.interactable = _cachedSkipInteractable;
+                for (int i = 0; i < dieSlots.Length; i++)
+                {
+                    dieSlots[i].selectButton.interactable = _cachedSelectInteractable[i];
+                }
+            }
+        }
 
         private void Start()
         {
@@ -113,6 +188,11 @@ namespace PokerDice
 
         private void OnRollClicked()
         {
+            if (!IsPlayerTurn)
+            {
+                return;
+            }
+
             rollButton.interactable = false;
             skipButton.interactable = false;
             SetAllSelectButtonsInteractable(false);
@@ -158,6 +238,11 @@ namespace PokerDice
 
         private void OnDieButtonClicked(int index)
         {
+            if (!IsPlayerTurn)
+            {
+                return;
+            }
+
             _held[index] = !_held[index];
             var slot = dieSlots[index];
             slot.heldMarker.SetActive(_held[index]);
@@ -173,6 +258,11 @@ namespace PokerDice
 
         private void OnSkipClicked()
         {
+            if (!IsPlayerTurn)
+            {
+                return;
+            }
+
             rollButton.interactable = false;
             skipButton.interactable = false;
             SetAllSelectButtonsInteractable(false);
