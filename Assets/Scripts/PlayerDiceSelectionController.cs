@@ -231,9 +231,17 @@ namespace PokerDice
             dieSlots[index].faceLabel.text = faceValue.ToString();
         }
 
-        private void HandleHandEvaluated(RollMultipleDice.PokerDiceHand hand)
+        private void HandleHandEvaluated(PokerDiceHand hand)
         {
             skipButton.interactable = true;
+        }
+
+        public void SetDieHeldVisual(int index, bool held)
+        {
+            var slot = dieSlots[index];
+            slot.heldMarker.SetActive(held);
+            slot.selectButton.targetGraphic.color = held ? heldColor : normalColor;
+            slot.dieOutcomeSlot.SetHeld(held);
         }
 
         private void OnDieButtonClicked(int index)

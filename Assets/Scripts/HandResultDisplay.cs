@@ -28,7 +28,7 @@ namespace PokerDice
             rollMultipleDice.OnRollStarted += HandleRollStarted;
         }
 
-        private void HandleHandEvaluated(RollMultipleDice.PokerDiceHand evaluatedHand)
+        private void HandleHandEvaluated(PokerDiceHand evaluatedHand)
         {
             text.text = Regex.Replace(evaluatedHand.ToString(), "(\\B[A-Z])", " $1");
         }

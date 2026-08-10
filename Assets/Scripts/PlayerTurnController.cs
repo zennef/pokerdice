@@ -57,7 +57,7 @@ namespace PokerDice
             }
         }
 
-        private void HandleHandEvaluated(RollMultipleDice.PokerDiceHand hand)
+        private void HandleHandEvaluated(PokerDiceHand hand)
         {
             if (TurnAuthority.Instance == null)
             {
