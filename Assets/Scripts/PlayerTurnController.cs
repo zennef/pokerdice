@@ -59,6 +59,17 @@ namespace PokerDice
 
         private void HandleHandEvaluated(RollMultipleDice.PokerDiceHand hand)
         {
+            if (TurnAuthority.Instance == null)
+            {
+                Debug.LogWarning("PlayerTurnController: TurnAuthority.Instance is null in HandleHandEvaluated — ignoring event.");
+                return;
+            }
+
+            if (TurnAuthority.Instance.CurrentOwner != TurnOwner.Player)
+            {
+                return;
+            }
+
             if (_hasRolledOnce)
             {
                 _rerollsUsed++;
