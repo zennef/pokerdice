@@ -3165,6 +3165,7 @@ Transform:
   - {fileID: 1791689468}
   - {fileID: 25265868}
   - {fileID: 695466830}
+  - {fileID: 1864612472}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &656168798
@@ -7422,6 +7423,59 @@ Transform:
   - {fileID: 2039610439}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1864612471
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1864612472}
+  - component: {fileID: 1864612473}
+  m_Layer: 0
+  m_Name: DiceBoxReskin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1864612472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864612471}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 619060454}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1864612473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1864612471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb5004180029d694f9786a8680478ec5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PokerDice.DiceBoxReskin
+  boxRenderers:
+  - {fileID: 228431390}
+  - {fileID: 200374546}
+  - {fileID: 2084415479}
+  - {fileID: 80470455}
+  - {fileID: 656168801}
+  - {fileID: 1828816591}
+  playerColor: {r: 0.2, g: 0.5, b: 0.9, a: 1}
+  botColor: {r: 0.85, g: 0.25, b: 0.2, a: 1}
 --- !u!1 &1871400829
 GameObject:
   m_ObjectHideFlags: 0
@@ -7944,8 +7998,8 @@ Transform:
   m_Children:
   - {fileID: 228431392}
   - {fileID: 200374548}
-  - {fileID: 80470457}
   - {fileID: 2084415481}
+  - {fileID: 80470457}
   - {fileID: 656168799}
   - {fileID: 1828816589}
   m_Father: {fileID: 1855398082}
