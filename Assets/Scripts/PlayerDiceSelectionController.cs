@@ -30,6 +30,7 @@ namespace PokerDice
         private bool _cachedSkipInteractable;
         private bool[] _cachedSelectInteractable;
         private bool _hasCachedState;
+        private bool isPlayerInputAllowed;
 
         public event Action OnPlayerFinishedTurn;
 
@@ -68,6 +69,7 @@ namespace PokerDice
         private void RefreshInputInteractable()
         {
             bool isPlayerTurn = IsPlayerTurn;
+            isPlayerInputAllowed = isPlayerTurn;
 
             if (_cachedSelectInteractable == null || _cachedSelectInteractable.Length != dieSlots.Length)
             {
@@ -120,6 +122,15 @@ namespace PokerDice
             rollMultipleDice.OnHandEvaluated += HandleHandEvaluated;
 
             ApplyInitialButtonState();
+
+            if (TurnAuthority.Instance == null)
+            {
+                Debug.LogWarning("PlayerDiceSelectionController: TurnAuthority.Instance is null in Start — skipping initial gating.");
+            }
+            else
+            {
+                RefreshInputInteractable();
+            }
         }
 
         private void ValidateReferences()
@@ -233,6 +244,11 @@ namespace PokerDice
 
         private void HandleHandEvaluated(PokerDiceHand hand)
         {
+            if (!isPlayerInputAllowed)
+            {
+                return;
+            }
+
             skipButton.interactable = true;
         }
 
