@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -30,7 +29,7 @@ namespace PokerDice
 
         private void HandleHandEvaluated(PokerDiceHand evaluatedHand)
         {
-            text.text = Regex.Replace(evaluatedHand.ToString(), "(\\B[A-Z])", " $1");
+            text.text = PokerHandNameFormatter.Format(evaluatedHand);
         }
 
         private void HandleRollStarted()

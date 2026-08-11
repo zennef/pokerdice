@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,8 @@ namespace PokerDice
         [SerializeField] private TMP_Text botHandLabel;
         [SerializeField] private TMP_Text outcomeLabel;
         [SerializeField] private Button closeButton;
+
+        public event Action OnClosed;
 
         private void OnEnable()
         {
@@ -28,6 +31,11 @@ namespace PokerDice
             outcomeLabel.text = GetOutcomeText(data.Outcome);
 
             Show();
+        }
+
+        protected override void OnHidden()
+        {
+            OnClosed?.Invoke();
         }
 
         private static string GetOutcomeText(RoundOutcome outcome)

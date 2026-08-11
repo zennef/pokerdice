@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace PokerDice
         [SerializeField] private MatchSettings matchSettings;
         [SerializeField] private BotTurnController botTurnController;
         [SerializeField] private PlayerDiceSelectionController diceSelectionUI;
+        [SerializeField] private RoundResultPopup roundResultPopup;
 
         private PokerDiceHand _lastEvaluatedHand;
         private PokerDiceHand _botFinalHand;
@@ -46,6 +48,11 @@ namespace PokerDice
             {
                 diceSelectionUI.OnPlayerFinishedTurn += HandlePlayerFinishedTurn;
             }
+
+            if (roundResultPopup != null)
+            {
+                roundResultPopup.OnClosed += HandleRoundResultPopupClosed;
+            }
         }
 
         private void OnDisable()
@@ -63,6 +70,11 @@ namespace PokerDice
             if (diceSelectionUI != null)
             {
                 diceSelectionUI.OnPlayerFinishedTurn -= HandlePlayerFinishedTurn;
+            }
+
+            if (roundResultPopup != null)
+            {
+                roundResultPopup.OnClosed -= HandleRoundResultPopupClosed;
             }
         }
 
@@ -86,6 +98,11 @@ namespace PokerDice
             if (diceSelectionUI == null)
             {
                 Debug.LogError("GameFlowManager: diceSelectionUI is not assigned.");
+            }
+
+            if (roundResultPopup == null)
+            {
+                Debug.LogError("GameFlowManager: roundResultPopup is not assigned.");
             }
         }
 
@@ -132,18 +149,23 @@ namespace PokerDice
 
         private void ResolveRound()
         {
+            RoundOutcome outcome;
+
             if ((int)_botFinalHand > (int)_playerFinalHand)
             {
                 _botWins++;
+                outcome = RoundOutcome.BotWins;
                 Debug.Log($"GameFlowManager: Bot wins the round with {_botFinalHand} vs player's {_playerFinalHand}.");
             }
             else if ((int)_playerFinalHand > (int)_botFinalHand)
             {
                 _playerWins++;
+                outcome = RoundOutcome.PlayerWins;
                 Debug.Log($"GameFlowManager: Player wins the round with {_playerFinalHand} vs bot's {_botFinalHand}.");
             }
             else
             {
+                outcome = RoundOutcome.Tie;
                 Debug.Log($"GameFlowManager: Round is a draw — both hands are {_botFinalHand} (same hand category, no kicker comparison yet).");
             }
 
@@ -153,10 +175,26 @@ namespace PokerDice
                 string winner = _botWins >= matchSettings.WinThreshold ? "Bot" : "Player";
                 Debug.Log($"GameFlowManager: Match over — {winner} wins! Final score — Bot: {_botWins}, Player: {_playerWins}.");
             }
-            else
+
+            var resultData = new RoundResultData(
+                PokerHandNameFormatter.Format(_playerFinalHand),
+                PokerHandNameFormatter.Format(_botFinalHand),
+                // TODO: wire real per-die values once the popup displays them
+                Array.Empty<int>(),
+                Array.Empty<int>(),
+                outcome);
+
+            roundResultPopup.ShowResult(resultData);
+        }
+
+        private void HandleRoundResultPopupClosed()
+        {
+            if (_matchOver)
             {
-                StartRound();
+                return;
             }
+
+            StartRound();
         }
     }
 }
