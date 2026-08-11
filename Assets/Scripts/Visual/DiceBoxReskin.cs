@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace PokerDice
@@ -7,10 +8,22 @@ namespace PokerDice
         [SerializeField] private Renderer[] boxRenderers;
         [SerializeField] private Color playerColor = new Color(0.2f, 0.5f, 0.9f);
         [SerializeField] private Color botColor = new Color(0.85f, 0.25f, 0.2f);
+        [SerializeField] private string colorPropertyName = "_BaseColor";
+        [SerializeField] private float transitionDuration = 0.3f;
 
         private MaterialPropertyBlock _propertyBlock;
+        private Coroutine _transitionRoutine;
+        private Color _currentColor;
         private bool _subscribed;
         private bool _hasStarted;
+
+        private void Awake()
+        {
+            if (boxRenderers == null || boxRenderers.Length == 0)
+            {
+                boxRenderers = GetComponentsInChildren<Renderer>();
+            }
+        }
 
         private void Start()
         {
@@ -25,7 +38,7 @@ namespace PokerDice
                 return;
             }
 
-            ApplyColor(TurnAuthority.Instance.CurrentOwner == TurnOwner.Player ? playerColor : botColor);
+            SetOwnerColor(TurnAuthority.Instance.CurrentOwner, true);
         }
 
         private void OnEnable()
@@ -71,11 +84,49 @@ namespace PokerDice
 
         private void HandleTurnOwnerChanged(TurnOwner newOwner)
         {
-            ApplyColor(newOwner == TurnOwner.Player ? playerColor : botColor);
+            SetOwnerColor(newOwner, false);
+        }
+
+        private void SetOwnerColor(TurnOwner owner, bool instant)
+        {
+            Color targetColor = owner == TurnOwner.Player ? playerColor : botColor;
+
+            if (_transitionRoutine != null)
+            {
+                StopCoroutine(_transitionRoutine);
+                _transitionRoutine = null;
+            }
+
+            if (instant)
+            {
+                ApplyColor(targetColor);
+            }
+            else
+            {
+                _transitionRoutine = StartCoroutine(TransitionColor(targetColor));
+            }
+        }
+
+        private IEnumerator TransitionColor(Color targetColor)
+        {
+            Color startColor = _currentColor;
+            float elapsed = 0f;
+
+            while (elapsed < transitionDuration)
+            {
+                elapsed += Time.deltaTime;
+                ApplyColor(Color.Lerp(startColor, targetColor, elapsed / transitionDuration));
+                yield return null;
+            }
+
+            ApplyColor(targetColor);
+            _transitionRoutine = null;
         }
 
         private void ApplyColor(Color color)
         {
+            _currentColor = color;
+
             if (_propertyBlock == null)
             {
                 _propertyBlock = new MaterialPropertyBlock();
@@ -90,8 +141,7 @@ namespace PokerDice
                 }
 
                 renderer.GetPropertyBlock(_propertyBlock);
-                _propertyBlock.SetColor("_Color", color);
-                _propertyBlock.SetColor("_BaseColor", color);
+                _propertyBlock.SetColor(colorPropertyName, color);
                 renderer.SetPropertyBlock(_propertyBlock);
             }
         }
