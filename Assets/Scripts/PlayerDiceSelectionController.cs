@@ -31,6 +31,7 @@ namespace PokerDice
         private bool[] _cachedSelectInteractable;
         private bool _hasCachedState;
         private bool isPlayerInputAllowed;
+        private bool _turnFinished;
 
         public event Action OnPlayerFinishedTurn;
 
@@ -249,6 +250,11 @@ namespace PokerDice
                 return;
             }
 
+            if (_turnFinished)
+            {
+                return;
+            }
+
             skipButton.interactable = true;
         }
 
@@ -282,10 +288,22 @@ namespace PokerDice
 
         private void OnSkipClicked()
         {
+            FinishTurn();
+        }
+
+        public void FinishTurn()
+        {
             if (!IsPlayerTurn)
             {
                 return;
             }
+
+            if (_turnFinished)
+            {
+                return;
+            }
+
+            _turnFinished = true;
 
             rollButton.interactable = false;
             skipButton.interactable = false;
@@ -308,6 +326,8 @@ namespace PokerDice
             {
                 _held[i] = false;
             }
+
+            _turnFinished = false;
 
             ApplyInitialButtonState();
         }

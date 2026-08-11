@@ -11,6 +11,7 @@ namespace PokerDice
         [SerializeField] private BotTurnController botTurnController;
         [SerializeField] private PlayerDiceSelectionController diceSelectionUI;
         [SerializeField] private RoundResultPopup roundResultPopup;
+        [SerializeField] private TurnResultPopup turnResultPopup;
 
         private PokerDiceHand _lastEvaluatedHand;
         private PokerDiceHand _botFinalHand;
@@ -18,6 +19,7 @@ namespace PokerDice
         private int _botWins;
         private int _playerWins;
         private bool _matchOver;
+        private Action _pendingTurnResultContinuation;
 
         private IEnumerator Start()
         {
@@ -53,6 +55,11 @@ namespace PokerDice
             {
                 roundResultPopup.OnClosed += HandleRoundResultPopupClosed;
             }
+
+            if (turnResultPopup != null)
+            {
+                turnResultPopup.OnClosed += HandleTurnResultPopupClosed;
+            }
         }
 
         private void OnDisable()
@@ -75,6 +82,11 @@ namespace PokerDice
             if (roundResultPopup != null)
             {
                 roundResultPopup.OnClosed -= HandleRoundResultPopupClosed;
+            }
+
+            if (turnResultPopup != null)
+            {
+                turnResultPopup.OnClosed -= HandleTurnResultPopupClosed;
             }
         }
 
@@ -132,8 +144,14 @@ namespace PokerDice
             }
 
             _botFinalHand = _lastEvaluatedHand;
-            diceSelectionUI.ResetForNewTurn();
-            TurnAuthority.Instance.SetTurnOwner(TurnOwner.Player);
+
+            _pendingTurnResultContinuation = () =>
+            {
+                diceSelectionUI.ResetForNewTurn();
+                TurnAuthority.Instance.SetTurnOwner(TurnOwner.Player);
+            };
+
+            turnResultPopup.ShowResult("Bot's Turn", PokerHandNameFormatter.Format(_botFinalHand));
         }
 
         private void HandlePlayerFinishedTurn()
@@ -144,7 +162,19 @@ namespace PokerDice
             }
 
             _playerFinalHand = _lastEvaluatedHand;
-            ResolveRound();
+
+            _pendingTurnResultContinuation = () =>
+            {
+                ResolveRound();
+            };
+
+            turnResultPopup.ShowResult("Your Turn", PokerHandNameFormatter.Format(_playerFinalHand));
+        }
+
+        private void HandleTurnResultPopupClosed()
+        {
+            _pendingTurnResultContinuation?.Invoke();
+            _pendingTurnResultContinuation = null;
         }
 
         private void ResolveRound()

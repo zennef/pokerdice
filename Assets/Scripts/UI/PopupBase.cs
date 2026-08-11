@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace PokerDice
 
         private CanvasGroup _canvasGroup;
         private Coroutine _fadeRoutine;
+
+        public event Action OnClosed;
 
         protected virtual void Awake()
         {
@@ -33,12 +36,18 @@ namespace PokerDice
                 StopCoroutine(_fadeRoutine);
             }
 
-            _fadeRoutine = StartCoroutine(FadeRoutine(1f, 0f, false, OnHidden));
+            _fadeRoutine = StartCoroutine(FadeRoutine(1f, 0f, false, HandleHidden));
         }
 
         protected virtual void OnShown() { }
 
         protected virtual void OnHidden() { }
+
+        private void HandleHidden()
+        {
+            OnHidden();
+            OnClosed?.Invoke();
+        }
 
         private IEnumerator FadeRoutine(float from, float to, bool interactable, System.Action onComplete)
         {

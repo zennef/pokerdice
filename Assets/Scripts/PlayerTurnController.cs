@@ -90,7 +90,7 @@ namespace PokerDice
 
             if (turnOver)
             {
-                playerDiceSelectionController.LockRollButton();
+                playerDiceSelectionController.FinishTurn();
             }
             else
             {

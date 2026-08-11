@@ -12,8 +12,6 @@ namespace PokerDice
         [SerializeField] private TMP_Text outcomeLabel;
         [SerializeField] private Button closeButton;
 
-        public event Action OnClosed;
-
         private void OnEnable()
         {
             closeButton.onClick.AddListener(Hide);
@@ -31,11 +29,6 @@ namespace PokerDice
             outcomeLabel.text = GetOutcomeText(data.Outcome);
 
             Show();
-        }
-
-        protected override void OnHidden()
-        {
-            OnClosed?.Invoke();
         }
 
         private static string GetOutcomeText(RoundOutcome outcome)
