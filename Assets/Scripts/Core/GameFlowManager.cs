@@ -13,7 +13,6 @@ namespace PokerDice
         [SerializeField] private RoundResultPopup roundResultPopup;
         [SerializeField] private TurnResultPopup turnResultPopup;
 
-        private PokerDiceHand _lastEvaluatedHand;
         private PokerDiceHand _botFinalHand;
         private PokerDiceHand _playerFinalHand;
         private int _botWins;
@@ -36,11 +35,6 @@ namespace PokerDice
 
         private void OnEnable()
         {
-            if (rollMultipleDice != null)
-            {
-                rollMultipleDice.OnHandEvaluated += HandleHandEvaluated;
-            }
-
             if (botTurnController != null)
             {
                 botTurnController.OnBotFinishedTurn += HandleBotFinishedTurn;
@@ -64,11 +58,6 @@ namespace PokerDice
 
         private void OnDisable()
         {
-            if (rollMultipleDice != null)
-            {
-                rollMultipleDice.OnHandEvaluated -= HandleHandEvaluated;
-            }
-
             if (botTurnController != null)
             {
                 botTurnController.OnBotFinishedTurn -= HandleBotFinishedTurn;
@@ -118,11 +107,6 @@ namespace PokerDice
             }
         }
 
-        private void HandleHandEvaluated(PokerDiceHand hand)
-        {
-            _lastEvaluatedHand = hand;
-        }
-
         private void StartRound()
         {
             diceSelectionUI.ResetForNewTurn();
@@ -143,7 +127,7 @@ namespace PokerDice
                 return;
             }
 
-            _botFinalHand = _lastEvaluatedHand;
+            _botFinalHand = rollMultipleDice.EvaluateHand();
 
             _pendingTurnResultContinuation = () =>
             {
@@ -161,7 +145,7 @@ namespace PokerDice
                 return;
             }
 
-            _playerFinalHand = _lastEvaluatedHand;
+            _playerFinalHand = rollMultipleDice.EvaluateHand();
 
             _pendingTurnResultContinuation = () =>
             {
