@@ -135,6 +135,15 @@ namespace PokerDice
             while (rerollsUsed < maxRerolls)
             {
                 bool[] holds = _strategy.DecideHolds(_currentFaces, maxRerolls - rerollsUsed);
+                Debug.Log($"[HeldMarkerDebug] frame {Time.frameCount}: reroll {rerollsUsed}, holds = [{string.Join(",", holds)}]");
+
+                for (int i = 0; i < 5; i++)
+                {
+                    if (!holds[i])
+                    {
+                        diceSelectionUI.SetDieHeldVisual(i, false);
+                    }
+                }
 
                 for (int i = 0; i < 5; i++)
                 {
@@ -151,6 +160,11 @@ namespace PokerDice
                 {
                     rerollShouldRoll[i] = !holds[i];
                     rerollTargetFaces[i] = holds[i] ? _currentFaces[i] : UnityEngine.Random.Range(1, 7);
+                }
+
+                for (int i = 0; i < 5; i++)
+                {
+                    diceSelectionUI.SetDieHeldVisual(i, false);
                 }
 
                 yield return RollAndWait(rerollShouldRoll, rerollTargetFaces);

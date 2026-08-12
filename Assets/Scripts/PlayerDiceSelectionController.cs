@@ -260,6 +260,8 @@ namespace PokerDice
 
         public void SetDieHeldVisual(int index, bool held)
         {
+            Debug.Log($"[HeldMarkerDebug] frame {Time.frameCount}: SetDieHeldVisual die {index} -> held={held}");
+
             var slot = dieSlots[index];
             slot.heldMarker.SetActive(held);
             slot.selectButton.targetGraphic.color = held ? heldColor : normalColor;
@@ -309,6 +311,13 @@ namespace PokerDice
             skipButton.interactable = false;
             SetAllSelectButtonsInteractable(false);
 
+            ClearAllHeldVisuals();
+
+            OnPlayerFinishedTurn?.Invoke();
+        }
+
+        private void ClearAllHeldVisuals()
+        {
             for (int i = 0; i < dieSlots.Length; i++)
             {
                 var slot = dieSlots[i];
@@ -316,8 +325,6 @@ namespace PokerDice
                 slot.selectButton.targetGraphic.color = normalColor;
                 slot.dieOutcomeSlot.SetHeld(false);
             }
-
-            OnPlayerFinishedTurn?.Invoke();
         }
 
         public void ResetForNewTurn()
@@ -329,6 +336,7 @@ namespace PokerDice
 
             _turnFinished = false;
 
+            ClearAllHeldVisuals();
             ApplyInitialButtonState();
         }
 
