@@ -13,8 +13,8 @@ namespace PokerDice
         [SerializeField] private RoundResultPopup roundResultPopup;
         [SerializeField] private TurnResultPopup turnResultPopup;
 
-        private PokerDiceHand _botFinalHand;
-        private PokerDiceHand _playerFinalHand;
+        private PokerHandResult _botFinalHand;
+        private PokerHandResult _playerFinalHand;
         private int _botWins;
         private int _playerWins;
         private bool _matchOver;
@@ -127,7 +127,7 @@ namespace PokerDice
                 return;
             }
 
-            _botFinalHand = rollMultipleDice.EvaluateHand();
+            _botFinalHand = rollMultipleDice.EvaluateDetailedHand();
 
             _pendingTurnResultContinuation = () =>
             {
@@ -135,7 +135,7 @@ namespace PokerDice
                 TurnAuthority.Instance.SetTurnOwner(TurnOwner.Player);
             };
 
-            turnResultPopup.ShowResult("Bot's Turn", PokerHandNameFormatter.Format(_botFinalHand));
+            turnResultPopup.ShowResult("Bot's Turn", PokerHandNameFormatter.Format(_botFinalHand.Category));
         }
 
         private void HandlePlayerFinishedTurn()
@@ -145,14 +145,14 @@ namespace PokerDice
                 return;
             }
 
-            _playerFinalHand = rollMultipleDice.EvaluateHand();
+            _playerFinalHand = rollMultipleDice.EvaluateDetailedHand();
 
             _pendingTurnResultContinuation = () =>
             {
                 ResolveRound();
             };
 
-            turnResultPopup.ShowResult("Your Turn", PokerHandNameFormatter.Format(_playerFinalHand));
+            turnResultPopup.ShowResult("Your Turn", PokerHandNameFormatter.Format(_playerFinalHand.Category));
         }
 
         private void HandleTurnResultPopupClosed()
@@ -165,22 +165,24 @@ namespace PokerDice
         {
             RoundOutcome outcome;
 
-            if ((int)_botFinalHand > (int)_playerFinalHand)
+            int comparison = _playerFinalHand.CompareTo(_botFinalHand);
+
+            if (comparison < 0)
             {
                 _botWins++;
                 outcome = RoundOutcome.BotWins;
-                Debug.Log($"GameFlowManager: Bot wins the round with {_botFinalHand} vs player's {_playerFinalHand}.");
+                Debug.Log($"GameFlowManager: Bot wins the round with {_botFinalHand.Category} vs player's {_playerFinalHand.Category}.");
             }
-            else if ((int)_playerFinalHand > (int)_botFinalHand)
+            else if (comparison > 0)
             {
                 _playerWins++;
                 outcome = RoundOutcome.PlayerWins;
-                Debug.Log($"GameFlowManager: Player wins the round with {_playerFinalHand} vs bot's {_botFinalHand}.");
+                Debug.Log($"GameFlowManager: Player wins the round with {_playerFinalHand.Category} vs bot's {_botFinalHand.Category}.");
             }
             else
             {
                 outcome = RoundOutcome.Tie;
-                Debug.Log($"GameFlowManager: Round is a draw — both hands are {_botFinalHand} (same hand category, no kicker comparison yet).");
+                Debug.Log($"GameFlowManager: Round is a draw — both hands are {_botFinalHand.Category} with identical kickers.");
             }
 
             if (_botWins >= matchSettings.WinThreshold || _playerWins >= matchSettings.WinThreshold)
@@ -191,11 +193,10 @@ namespace PokerDice
             }
 
             var resultData = new RoundResultData(
-                PokerHandNameFormatter.Format(_playerFinalHand),
-                PokerHandNameFormatter.Format(_botFinalHand),
-                // TODO: wire real per-die values once the popup displays them
-                Array.Empty<int>(),
-                Array.Empty<int>(),
+                PokerHandNameFormatter.Format(_playerFinalHand.Category),
+                PokerHandNameFormatter.Format(_botFinalHand.Category),
+                _playerFinalHand.Faces,
+                _botFinalHand.Faces,
                 outcome);
 
             roundResultPopup.ShowResult(resultData);

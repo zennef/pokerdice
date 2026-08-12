@@ -78,5 +78,7 @@ namespace PokerDice
         }
 
         public PokerDiceHand EvaluateHand() => PokerHandEvaluator.Evaluate(_outcomes);
+
+        public PokerHandResult EvaluateDetailedHand() => PokerHandEvaluator.EvaluateDetailed(_outcomes);
     }
 }

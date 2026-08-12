@@ -74,6 +74,76 @@ namespace PokerDice
             return PokerDiceHand.HighestNumber;
         }
 
+        public static PokerHandResult EvaluateDetailed(int[] faces)
+        {
+            PokerDiceHand category = Evaluate(faces);
+            int[] tieBreakers = ComputeTieBreakers(category, faces);
+            return new PokerHandResult(category, tieBreakers, (int[])faces.Clone());
+        }
+
+        private static int[] ComputeTieBreakers(PokerDiceHand category, int[] faces)
+        {
+            var counts = faces.GroupBy(d => d)
+                              .ToDictionary(g => g.Key, g => g.Count());
+
+            switch (category)
+            {
+                case PokerDiceHand.FiveOfAKind:
+                {
+                    int quint = counts.First(kv => kv.Value == 5).Key;
+                    return new[] { quint };
+                }
+
+                case PokerDiceHand.FourOfAKind:
+                {
+                    int quad = counts.First(kv => kv.Value == 4).Key;
+                    int kicker = counts.First(kv => kv.Value == 1).Key;
+                    return new[] { quad, kicker };
+                }
+
+                case PokerDiceHand.FullHouse:
+                {
+                    int triple = counts.First(kv => kv.Value == 3).Key;
+                    int pair = counts.First(kv => kv.Value == 2).Key;
+                    return new[] { triple, pair };
+                }
+
+                case PokerDiceHand.ThreeOfAKind:
+                {
+                    int triple = counts.First(kv => kv.Value == 3).Key;
+                    var kickers = counts.Where(kv => kv.Value == 1)
+                                        .Select(kv => kv.Key)
+                                        .OrderByDescending(k => k);
+                    return new[] { triple }.Concat(kickers).ToArray();
+                }
+
+                case PokerDiceHand.TwoPair:
+                {
+                    var pairs = counts.Where(kv => kv.Value == 2)
+                                      .Select(kv => kv.Key)
+                                      .OrderByDescending(k => k)
+                                      .ToArray();
+                    int kicker = counts.First(kv => kv.Value == 1).Key;
+                    return new[] { pairs[0], pairs[1], kicker };
+                }
+
+                case PokerDiceHand.OnePair:
+                {
+                    int pair = counts.First(kv => kv.Value == 2).Key;
+                    var kickers = counts.Where(kv => kv.Value == 1)
+                                        .Select(kv => kv.Key)
+                                        .OrderByDescending(k => k);
+                    return new[] { pair }.Concat(kickers).ToArray();
+                }
+
+                case PokerDiceHand.HighStraight:
+                case PokerDiceHand.LowStraight:
+                case PokerDiceHand.HighestNumber:
+                default:
+                    return faces.OrderByDescending(f => f).ToArray();
+            }
+        }
+
         private static bool IsHighStraight(int[] dice)
         {
             var distinctSorted = dice.Distinct().OrderBy(d => d).ToArray();
