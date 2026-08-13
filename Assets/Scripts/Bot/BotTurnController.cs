@@ -137,6 +137,12 @@ namespace PokerDice
                 bool[] holds = _strategy.DecideHolds(_currentFaces, maxRerolls - rerollsUsed);
                 Debug.Log($"[HeldMarkerDebug] frame {Time.frameCount}: reroll {rerollsUsed}, holds = [{string.Join(",", holds)}]");
 
+                if (Array.TrueForAll(holds, h => h))
+                {
+                    Debug.Log($"[HeldMarkerDebug] frame {Time.frameCount}: all dice held, skipping reroll {rerollsUsed}");
+                    break;
+                }
+
                 for (int i = 0; i < 5; i++)
                 {
                     if (!holds[i])

@@ -12,6 +12,7 @@ namespace PokerDice
         [SerializeField] private PlayerDiceSelectionController diceSelectionUI;
         [SerializeField] private RoundResultPopup roundResultPopup;
         [SerializeField] private TurnResultPopup turnResultPopup;
+        [SerializeField] private MatchOverPopup matchOverPopup;
 
         private PokerHandResult _botFinalHand;
         private PokerHandResult _playerFinalHand;
@@ -20,10 +21,18 @@ namespace PokerDice
         private bool _matchOver;
         private Action _pendingTurnResultContinuation;
 
-        private IEnumerator Start()
+        private void Start()
         {
             ValidateReferences();
+        }
 
+        public void BeginMatch()
+        {
+            StartCoroutine(BeginMatchRoutine());
+        }
+
+        private IEnumerator BeginMatchRoutine()
+        {
             // Let every other component's own Start() run first, so BotTurnController and
             // TurnAuthority.Instance are guaranteed to be subscribed/ready before this class
             // ever calls SetTurnOwner — same category of ordering hazard as the project's known
@@ -104,6 +113,11 @@ namespace PokerDice
             if (roundResultPopup == null)
             {
                 Debug.LogError("GameFlowManager: roundResultPopup is not assigned.");
+            }
+
+            if (matchOverPopup == null)
+            {
+                Debug.LogError("GameFlowManager: matchOverPopup is not assigned.");
             }
         }
 
@@ -188,8 +202,6 @@ namespace PokerDice
             if (_botWins >= matchSettings.WinThreshold || _playerWins >= matchSettings.WinThreshold)
             {
                 _matchOver = true;
-                string winner = _botWins >= matchSettings.WinThreshold ? "Bot" : "Player";
-                Debug.Log($"GameFlowManager: Match over — {winner} wins! Final score — Bot: {_botWins}, Player: {_playerWins}.");
             }
 
             var resultData = new RoundResultData(
@@ -206,6 +218,12 @@ namespace PokerDice
         {
             if (_matchOver)
             {
+                MatchOutcome outcome = _playerWins >= matchSettings.WinThreshold
+                    ? MatchOutcome.PlayerWinsMatch
+                    : MatchOutcome.BotWinsMatch;
+
+                var matchResultData = new MatchResultData(outcome, _playerWins, _botWins);
+                matchOverPopup.ShowResult(matchResultData);
                 return;
             }
 
