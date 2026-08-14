@@ -19,6 +19,7 @@ namespace PokerDice
         private Coroutine _turnRoutine;
 
         public event Action<PokerHandResult> OnBotFinishedTurn;
+        public event Action<PokerDiceHand> OnMidTurnHandEvaluated;
 
         private void Start()
         {
@@ -158,6 +159,8 @@ namespace PokerDice
                     Debug.Log($"[HeldMarkerDebug] frame {Time.frameCount}: all dice held, skipping reroll {rerollsUsed}");
                     break;
                 }
+
+                OnMidTurnHandEvaluated?.Invoke(_lastEvaluatedHand);
 
                 for (int i = 0; i < 5; i++)
                 {

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace PokerDice
@@ -10,6 +11,8 @@ namespace PokerDice
 
         private bool _hasRolledOnce;
         private int _rerollsUsed;
+
+        public event Action<PokerDiceHand> OnMidTurnHandEvaluated;
 
         private void OnEnable()
         {
@@ -95,6 +98,7 @@ namespace PokerDice
             else
             {
                 playerDiceSelectionController.UnlockRollButton();
+                OnMidTurnHandEvaluated?.Invoke(hand);
             }
         }
 
