@@ -18,7 +18,7 @@ namespace PokerDice
         private PokerDiceHand _lastEvaluatedHand;
         private Coroutine _turnRoutine;
 
-        public event Action OnBotFinishedTurn;
+        public event Action<PokerHandResult> OnBotFinishedTurn;
 
         private void Start()
         {
@@ -196,7 +196,7 @@ namespace PokerDice
 
             Debug.Log($"BotTurnController: final hand evaluated as {_lastEvaluatedHand}");
 
-            OnBotFinishedTurn?.Invoke();
+            OnBotFinishedTurn?.Invoke(PokerHandEvaluator.EvaluateDetailed(_currentFaces));
         }
 
         private IEnumerator RollAndWait(bool[] shouldRoll, int[] targetFaces)

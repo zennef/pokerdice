@@ -138,14 +138,14 @@ namespace PokerDice
             TurnAuthority.Instance.SetTurnOwner(TurnOwner.Bot);
         }
 
-        private void HandleBotFinishedTurn()
+        private void HandleBotFinishedTurn(PokerHandResult finalHand)
         {
             if (_matchOver)
             {
                 return;
             }
 
-            _botFinalHand = rollMultipleDice.EvaluateDetailedHand();
+            _botFinalHand = finalHand;
 
             _pendingTurnResultContinuation = () =>
             {
