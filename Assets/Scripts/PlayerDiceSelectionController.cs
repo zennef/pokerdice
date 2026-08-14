@@ -13,13 +13,13 @@ namespace PokerDice
             public Button selectButton;
             public TextMeshProUGUI faceLabel;
             public GameObject heldMarker;
-            public DiceOutcomeSlot dieOutcomeSlot;
         }
 
         [SerializeField] private Button rollButton;
         [SerializeField] private Button skipButton;
         [SerializeField] private DieUISlot[] dieSlots = new DieUISlot[5];
         [SerializeField] private RollMultipleDice rollMultipleDice;
+        [SerializeField] private DiceRollOverride diceRollOverride;
         [SerializeField] private Color heldColor = new Color(0.4f, 0.8f, 0.4f);
         [SerializeField] private Color normalColor = Color.white;
 
@@ -117,10 +117,10 @@ namespace PokerDice
             {
                 int index = i;
                 dieSlots[index].selectButton.onClick.AddListener(() => OnDieButtonClicked(index));
-                dieSlots[index].dieOutcomeSlot.OnDieSettled += faceValue => HandleDieSettled(index, faceValue);
             }
 
             rollMultipleDice.OnHandEvaluated += HandleHandEvaluated;
+            rollMultipleDice.OnDieSettled += HandleDieSettled;
 
             ApplyInitialButtonState();
 
@@ -151,6 +151,11 @@ namespace PokerDice
                 Debug.LogError("PlayerDiceSelectionController: rollMultipleDice is not assigned.");
             }
 
+            if (diceRollOverride == null)
+            {
+                Debug.LogError("PlayerDiceSelectionController: diceRollOverride is not assigned.");
+            }
+
             for (int i = 0; i < dieSlots.Length; i++)
             {
                 var slot = dieSlots[i];
@@ -174,11 +179,6 @@ namespace PokerDice
                 {
                     Debug.LogError($"PlayerDiceSelectionController: dieSlots[{i}].heldMarker is not assigned.");
                 }
-
-                if (slot.dieOutcomeSlot == null)
-                {
-                    Debug.LogError($"PlayerDiceSelectionController: dieSlots[{i}].dieOutcomeSlot is not assigned.");
-                }
             }
         }
 
@@ -194,7 +194,6 @@ namespace PokerDice
                 slot.heldMarker.SetActive(false);
                 slot.selectButton.targetGraphic.color = normalColor;
                 slot.faceLabel.text = "–";
-                slot.dieOutcomeSlot.SetHeld(false);
             }
         }
 
@@ -216,15 +215,14 @@ namespace PokerDice
                 var slot = dieSlots[i];
                 slot.heldMarker.SetActive(false);
                 slot.selectButton.targetGraphic.color = normalColor;
-                slot.dieOutcomeSlot.SetHeld(false);
 
                 shouldRoll[i] = !_held[i];
                 if (shouldRoll[i])
                 {
                     slot.faceLabel.text = "–";
-                    targetFaces[i] = slot.dieOutcomeSlot.IsRandom
-                        ? UnityEngine.Random.Range(1, 7)
-                        : slot.dieOutcomeSlot.ForcedValue;
+                    targetFaces[i] = diceRollOverride.TryGetForcedFace(TurnOwner.Player, i, out var forced)
+                        ? forced
+                        : UnityEngine.Random.Range(1, 7);
                 }
                 else
                 {
@@ -265,7 +263,6 @@ namespace PokerDice
             var slot = dieSlots[index];
             slot.heldMarker.SetActive(held);
             slot.selectButton.targetGraphic.color = held ? heldColor : normalColor;
-            slot.dieOutcomeSlot.SetHeld(held);
         }
 
         private void OnDieButtonClicked(int index)
@@ -279,11 +276,6 @@ namespace PokerDice
             var slot = dieSlots[index];
             slot.heldMarker.SetActive(_held[index]);
             slot.selectButton.targetGraphic.color = _held[index] ? heldColor : normalColor;
-            slot.dieOutcomeSlot.SetHeld(_held[index]);
-            if (_held[index])
-            {
-                slot.dieOutcomeSlot.SyncDisplayedValue(_lastSettledFaces[index]);
-            }
 
             rollButton.interactable = !AllHeld();
         }
@@ -323,7 +315,6 @@ namespace PokerDice
                 var slot = dieSlots[i];
                 slot.heldMarker.SetActive(false);
                 slot.selectButton.targetGraphic.color = normalColor;
-                slot.dieOutcomeSlot.SetHeld(false);
             }
         }
 

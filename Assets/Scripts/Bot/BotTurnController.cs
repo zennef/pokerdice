@@ -9,6 +9,7 @@ namespace PokerDice
         [SerializeField] private RollMultipleDice rollMultipleDice;
         [SerializeField] private MatchSettings matchSettings;
         [SerializeField] private PlayerDiceSelectionController diceSelectionUI;
+        [SerializeField] private DiceRollOverride diceRollOverride;
         [SerializeField] private float holdRevealDelay = 0.5f;
 
         private readonly IBotHoldStrategy _strategy = new BruteForceEvHoldStrategy();
@@ -80,6 +81,21 @@ namespace PokerDice
             {
                 Debug.LogError("BotTurnController: diceSelectionUI is not assigned.");
             }
+
+            if (diceRollOverride == null)
+            {
+                Debug.LogError("BotTurnController: diceRollOverride is not assigned.");
+            }
+        }
+
+        private int GetTargetFace(int dieIndex)
+        {
+            if (diceRollOverride != null && diceRollOverride.TryGetForcedFace(TurnOwner.Bot, dieIndex, out var forced))
+            {
+                return forced;
+            }
+
+            return UnityEngine.Random.Range(1, 7);
         }
 
         private void HandleDieSettled(int index, int faceValue)
@@ -124,7 +140,7 @@ namespace PokerDice
             for (int i = 0; i < 5; i++)
             {
                 shouldRoll[i] = true;
-                targetFaces[i] = UnityEngine.Random.Range(1, 7);
+                targetFaces[i] = GetTargetFace(i);
             }
 
             yield return RollAndWait(shouldRoll, targetFaces);
@@ -165,7 +181,7 @@ namespace PokerDice
                 for (int i = 0; i < 5; i++)
                 {
                     rerollShouldRoll[i] = !holds[i];
-                    rerollTargetFaces[i] = holds[i] ? _currentFaces[i] : UnityEngine.Random.Range(1, 7);
+                    rerollTargetFaces[i] = holds[i] ? _currentFaces[i] : GetTargetFace(i);
                 }
 
                 for (int i = 0; i < 5; i++)

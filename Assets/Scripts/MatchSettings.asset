@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: MatchSettings
   m_EditorClassIdentifier: Assembly-CSharp::PokerDice.MatchSettings
   maxRerolls: 1
-  winThreshold: 3
+  winThreshold: 2
