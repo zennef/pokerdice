@@ -21,6 +21,8 @@ namespace PokerDice
         private bool _matchOver;
         private Action _pendingTurnResultContinuation;
 
+        public event Action<int, int> OnScoreChanged;
+
         private void Start()
         {
             ValidateReferences();
@@ -38,6 +40,8 @@ namespace PokerDice
             // ever calls SetTurnOwner — same category of ordering hazard as the project's known
             // Awake()/TurnAuthority.Instance issue, one frame later.
             yield return null;
+
+            OnScoreChanged?.Invoke(_playerWins, _botWins);
 
             StartRound();
         }
@@ -210,6 +214,8 @@ namespace PokerDice
                 _playerFinalHand.Faces,
                 _botFinalHand.Faces,
                 outcome);
+
+            OnScoreChanged?.Invoke(_playerWins, _botWins);
 
             roundResultPopup.ShowResult(resultData);
         }

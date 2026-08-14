@@ -9,7 +9,7 @@ namespace PredictedDice.Editor
         [MenuItem("GameObject/Setup Predicted Dice Manager")]
         public static void SetupDice()
         {
-            ProjectionSceneManager projectionSceneManager = FindObjectOfType<ProjectionSceneManager>();
+            ProjectionSceneManager projectionSceneManager = FindFirstObjectByType<ProjectionSceneManager>();
 
             if (projectionSceneManager == null)
             {
@@ -26,7 +26,7 @@ namespace PredictedDice.Editor
 
         private static void SetCollisionObjectsFromStatics(ProjectionSceneManager projectionSceneManager)
         {
-            GameObject[] objects = GameObject.FindObjectsOfType<GameObject>();
+            GameObject[] objects = GameObject.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
             var gameObjects = objects.Where(x => x.transform.parent == null && x.GetComponent(typeof(Collider))).Where(
                 x =>
                     GameObjectUtility.AreStaticEditorFlagsSet(x,
