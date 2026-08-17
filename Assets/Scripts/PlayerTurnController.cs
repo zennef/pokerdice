@@ -13,6 +13,7 @@ namespace PokerDice
         private int _rerollsUsed;
 
         public event Action<PokerDiceHand> OnMidTurnHandEvaluated;
+        public event Action<int> OnRerollsRemainingChanged;
 
         private void OnEnable()
         {
@@ -21,11 +22,19 @@ namespace PokerDice
             if (rollMultipleDice != null)
             {
                 rollMultipleDice.OnHandEvaluated += HandleHandEvaluated;
+                rollMultipleDice.OnRollStarted += HandleRollStarted;
             }
+        }
 
-            if (playerDiceSelectionController != null)
+        private void Start()
+        {
+            if (TurnAuthority.Instance == null)
             {
-                playerDiceSelectionController.OnPlayerFinishedTurn += HandlePlayerFinishedTurn;
+                Debug.LogError("PlayerTurnController: TurnAuthority.Instance is null in Start — skipping subscription.");
+            }
+            else
+            {
+                TurnAuthority.Instance.OnTurnOwnerChanged += HandleTurnOwnerChanged;
             }
         }
 
@@ -34,11 +43,12 @@ namespace PokerDice
             if (rollMultipleDice != null)
             {
                 rollMultipleDice.OnHandEvaluated -= HandleHandEvaluated;
+                rollMultipleDice.OnRollStarted -= HandleRollStarted;
             }
 
-            if (playerDiceSelectionController != null)
+            if (TurnAuthority.Instance != null)
             {
-                playerDiceSelectionController.OnPlayerFinishedTurn -= HandlePlayerFinishedTurn;
+                TurnAuthority.Instance.OnTurnOwnerChanged -= HandleTurnOwnerChanged;
             }
         }
 
@@ -60,6 +70,24 @@ namespace PokerDice
             }
         }
 
+        private void HandleRollStarted()
+        {
+            if (TurnAuthority.Instance == null || TurnAuthority.Instance.CurrentOwner != TurnOwner.Player)
+            {
+                return;
+            }
+
+            if (!_hasRolledOnce)
+            {
+                return;
+            }
+
+            _rerollsUsed++;
+
+            int maxRerolls = matchSettings != null ? matchSettings.MaxRerolls : 1;
+            OnRerollsRemainingChanged?.Invoke(Mathf.Max(0, maxRerolls - _rerollsUsed));
+        }
+
         private void HandleHandEvaluated(PokerDiceHand hand)
         {
             if (TurnAuthority.Instance == null)
@@ -73,14 +101,7 @@ namespace PokerDice
                 return;
             }
 
-            if (_hasRolledOnce)
-            {
-                _rerollsUsed++;
-            }
-            else
-            {
-                _hasRolledOnce = true;
-            }
+            _hasRolledOnce = true;
 
             int maxRerolls = matchSettings != null ? matchSettings.MaxRerolls : 1;
             bool turnOver = _rerollsUsed >= maxRerolls;
@@ -102,16 +123,20 @@ namespace PokerDice
             }
         }
 
-        private void HandlePlayerFinishedTurn()
+        private void HandleTurnOwnerChanged(TurnOwner newOwner)
         {
-            Debug.Log("PlayerTurnController: player finished turn, resetting.");
-            ResetForNewTurn();
+            if (newOwner == TurnOwner.Player)
+            {
+                ResetForNewTurn();
+            }
         }
 
         public void ResetForNewTurn()
         {
             _hasRolledOnce = false;
             _rerollsUsed = 0;
+
+            OnRerollsRemainingChanged?.Invoke(matchSettings != null ? matchSettings.MaxRerolls : 1);
         }
     }
 }

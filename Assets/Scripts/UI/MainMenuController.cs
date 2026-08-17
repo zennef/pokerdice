@@ -12,6 +12,11 @@ namespace PokerDice
         {
             ValidateReferences();
 
+            if (GameplayVisibility.Instance != null)
+            {
+                GameplayVisibility.Instance.NotifyOverlayShown();
+            }
+
             if (MatchLaunchOptions.SkipMenu)
             {
                 MatchLaunchOptions.SkipMenu = false;

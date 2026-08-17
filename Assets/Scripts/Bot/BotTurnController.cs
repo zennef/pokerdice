@@ -20,6 +20,7 @@ namespace PokerDice
 
         public event Action<PokerHandResult> OnBotFinishedTurn;
         public event Action<PokerDiceHand> OnMidTurnHandEvaluated;
+        public event Action<int> OnRerollsRemainingChanged;
 
         private void Start()
         {
@@ -136,6 +137,11 @@ namespace PokerDice
                 diceSelectionUI.SetDieHeldVisual(i, false);
             }
 
+            int maxRerolls = matchSettings.MaxRerolls;
+            int rerollsUsed = 0;
+
+            OnRerollsRemainingChanged?.Invoke(maxRerolls);
+
             var shouldRoll = new bool[5];
             var targetFaces = new int[5];
             for (int i = 0; i < 5; i++)
@@ -145,9 +151,6 @@ namespace PokerDice
             }
 
             yield return RollAndWait(shouldRoll, targetFaces);
-
-            int maxRerolls = matchSettings.MaxRerolls;
-            int rerollsUsed = 0;
 
             while (rerollsUsed < maxRerolls)
             {
@@ -192,9 +195,11 @@ namespace PokerDice
                     diceSelectionUI.SetDieHeldVisual(i, false);
                 }
 
-                yield return RollAndWait(rerollShouldRoll, rerollTargetFaces);
-
                 rerollsUsed++;
+
+                OnRerollsRemainingChanged?.Invoke(Mathf.Max(0, maxRerolls - rerollsUsed));
+
+                yield return RollAndWait(rerollShouldRoll, rerollTargetFaces);
             }
 
             Debug.Log($"BotTurnController: final hand evaluated as {_lastEvaluatedHand}");
