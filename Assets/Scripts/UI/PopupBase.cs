@@ -41,11 +41,6 @@ namespace PokerDice
                 StopCoroutine(_fadeRoutine);
             }
 
-            if (GameplayVisibility.Instance != null)
-            {
-                GameplayVisibility.Instance.NotifyOverlayHidden();
-            }
-
             _fadeRoutine = StartCoroutine(FadeRoutine(1f, 0f, false, HandleHidden));
         }
 
@@ -55,6 +50,11 @@ namespace PokerDice
 
         private void HandleHidden()
         {
+            if (GameplayVisibility.Instance != null)
+            {
+                GameplayVisibility.Instance.NotifyOverlayHidden();
+            }
+
             OnHidden();
             OnClosed?.Invoke();
         }

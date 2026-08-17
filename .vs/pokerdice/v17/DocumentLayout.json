@@ -3,11 +3,15 @@
   "WorkspaceRootPath": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{E9922967-79E2-6236-9145-456452A460CD}|Assembly-CSharp.csproj|c:\\users\\mikeg\\unity projects\\pokerdice\\assets\\scripts\\ui\\rerollsremainingdisplay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E9922967-79E2-6236-9145-456452A460CD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\rerollsremainingdisplay.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{E9922967-79E2-6236-9145-456452A460CD}|Assembly-CSharp.csproj|c:\\users\\mikeg\\unity projects\\pokerdice\\assets\\scripts\\playerturncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E9922967-79E2-6236-9145-456452A460CD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\playerturncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E9922967-79E2-6236-9145-456452A460CD}|Assembly-CSharp.csproj|c:\\users\\mikeg\\unity projects\\pokerdice\\assets\\scripts\\playerdiceselectioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E9922967-79E2-6236-9145-456452A460CD}|Assembly-CSharp.csproj|C:\\Users\\mikeg\\Unity Projects\\pokerdice\\assets\\scripts\\playerdiceselectioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E9922967-79E2-6236-9145-456452A460CD}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\playerdiceselectioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -35,6 +39,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "RerollsRemainingDisplay.cs",
+              "DocumentMoniker": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\Assets\\Scripts\\UI\\RerollsRemainingDisplay.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\RerollsRemainingDisplay.cs",
+              "ToolTip": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\Assets\\Scripts\\UI\\RerollsRemainingDisplay.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\RerollsRemainingDisplay.cs",
+              "ViewState": "AgIAACYAAAAAAAAAAAAQwDoAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-17T23:32:49Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "PlayerTurnController.cs",
               "DocumentMoniker": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\Assets\\Scripts\\PlayerTurnController.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerTurnController.cs",
@@ -47,7 +64,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "PlayerDiceSelectionController.cs",
               "DocumentMoniker": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\Assets\\Scripts\\PlayerDiceSelectionController.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerDiceSelectionController.cs",
@@ -55,12 +72,11 @@
               "RelativeToolTip": "Assets\\Scripts\\PlayerDiceSelectionController.cs",
               "ViewState": "AgIAAPYAAAAAAAAAAAAqwBsBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-08-10T20:35:25.434Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-10T20:35:25.434Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "HandResultDisplay.cs",
               "DocumentMoniker": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\Assets\\Scripts\\HandResultDisplay.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\HandResultDisplay.cs",
@@ -72,7 +88,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "RollMultipleDice.cs",
               "DocumentMoniker": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\Assets\\Scripts\\RollMultipleDice.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\RollMultipleDice.cs",
@@ -84,7 +100,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "GameController.cs",
               "DocumentMoniker": "C:\\Users\\mikeg\\Unity Projects\\pokerdice\\Assets\\Scripts\\GameController.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\GameController.cs",

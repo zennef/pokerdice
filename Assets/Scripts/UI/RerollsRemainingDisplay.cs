@@ -56,7 +56,7 @@ namespace PokerDice
 
         private void RefreshText()
         {
-            text.text = _isGameplayActive ? $"Remaining rerolls: {_lastKnownRemaining}" : "";
+            text.text = _isGameplayActive ? $"Rerolls: {_lastKnownRemaining}" : "";
         }
 
         private void OnDestroy()
