@@ -5,7 +5,8 @@ namespace PokerDice
 {
     public class MainMenuController : PopupBase
     {
-        [SerializeField] private Button playButton;
+        [SerializeField] private Button vsBotButton;
+        [SerializeField] private Button vsPlayerButton;
         [SerializeField] private GameFlowManager gameFlowManager;
 
         private void Start()
@@ -26,12 +27,26 @@ namespace PokerDice
 
         private void OnEnable()
         {
-            playButton.onClick.AddListener(Hide);
+            vsBotButton.onClick.AddListener(HandleVsBotClicked);
+            vsPlayerButton.onClick.AddListener(HandleVsPlayerClicked);
         }
 
         private void OnDisable()
         {
-            playButton.onClick.RemoveListener(Hide);
+            vsBotButton.onClick.RemoveListener(HandleVsBotClicked);
+            vsPlayerButton.onClick.RemoveListener(HandleVsPlayerClicked);
+        }
+
+        private void HandleVsBotClicked()
+        {
+            MatchLaunchOptions.Mode = MatchMode.VsBot;
+            Hide();
+        }
+
+        private void HandleVsPlayerClicked()
+        {
+            MatchLaunchOptions.Mode = MatchMode.Hotseat;
+            Hide();
         }
 
         protected override void OnHidden()
@@ -41,9 +56,14 @@ namespace PokerDice
 
         private void ValidateReferences()
         {
-            if (playButton == null)
+            if (vsBotButton == null)
             {
-                Debug.LogError("MainMenuController: playButton is not assigned.");
+                Debug.LogError("MainMenuController: vsBotButton is not assigned.");
+            }
+
+            if (vsPlayerButton == null)
+            {
+                Debug.LogError("MainMenuController: vsPlayerButton is not assigned.");
             }
 
             if (gameFlowManager == null)
