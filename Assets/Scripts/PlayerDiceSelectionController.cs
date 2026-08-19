@@ -62,7 +62,7 @@ namespace PokerDice
             RefreshInputInteractable();
         }
 
-        private bool IsPlayerTurn => TurnAuthority.Instance.CurrentOwner == TurnOwner.Player;
+        private bool IsPlayerTurn => MatchLaunchOptions.IsHumanControlled(TurnAuthority.Instance.CurrentOwner);
 
         // Stopgap cache/restore approach: a real turn-phase concept (pre-roll / selecting /
         // hand-evaluated) likely belongs in GameFlowManager once it exists, at which point this

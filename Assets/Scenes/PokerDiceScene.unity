@@ -8015,7 +8015,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 12.099976, y: -23.100006}
+  m_AnchoredPosition: {x: 12.099976, y: -12}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2078191519
@@ -8073,7 +8073,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -8130,7 +8130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b06e3730bf3ab342a3b3e2245fc5ab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PokerDice.OpeningHandDisplay
-  botTurnController: {fileID: 1794903132}
+  gameFlowManager: {fileID: 109276885}
 --- !u!1 &2084415477
 GameObject:
   m_ObjectHideFlags: 0

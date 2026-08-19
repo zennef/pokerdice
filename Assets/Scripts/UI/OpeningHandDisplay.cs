@@ -7,7 +7,7 @@ namespace PokerDice
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class OpeningHandDisplay : MonoBehaviour
     {
-        [SerializeField] private BotTurnController botTurnController;
+        [SerializeField] private GameFlowManager gameFlowManager;
 
         private TextMeshProUGUI text;
 
@@ -19,13 +19,13 @@ namespace PokerDice
 
         private void Start()
         {
-            if (botTurnController == null)
+            if (gameFlowManager == null)
             {
-                Debug.LogError($"{nameof(OpeningHandDisplay)} on {name} needs its Bot Turn Controller field assigned in the Inspector.");
+                Debug.LogError($"{nameof(OpeningHandDisplay)} on {name} needs its Game Flow Manager field assigned in the Inspector.");
                 return;
             }
 
-            botTurnController.OnBotFinishedTurn += HandleBotFinishedTurn;
+            gameFlowManager.OnOpeningSeatFinished += HandleOpeningSeatFinished;
 
             if (TurnAuthority.Instance == null)
             {
@@ -36,9 +36,10 @@ namespace PokerDice
             TurnAuthority.Instance.OnTurnOwnerChanged += HandleTurnOwnerChanged;
         }
 
-        private void HandleBotFinishedTurn(PokerHandResult finalHand)
+        private void HandleOpeningSeatFinished(PokerHandResult finalHand)
         {
-            text.text = $"Bot: {PokerHandNameFormatter.Format(finalHand.Category)} — {FormatFaces(finalHand.Faces)}";
+            string prefix = MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2: " : "Bot: ";
+            text.text = $"{prefix}{PokerHandNameFormatter.Format(finalHand.Category)}\n{FormatFaces(finalHand.Faces)}";
         }
 
         private void HandleTurnOwnerChanged(TurnOwner newOwner)
@@ -62,9 +63,9 @@ namespace PokerDice
 
         private void OnDestroy()
         {
-            if (botTurnController != null)
+            if (gameFlowManager != null)
             {
-                botTurnController.OnBotFinishedTurn -= HandleBotFinishedTurn;
+                gameFlowManager.OnOpeningSeatFinished -= HandleOpeningSeatFinished;
             }
 
             if (TurnAuthority.Instance != null)

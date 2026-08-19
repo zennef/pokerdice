@@ -27,8 +27,8 @@ namespace PokerDice
         public void ShowResult(MatchResultData data)
         {
             winnerLabel.text = data.Outcome == MatchOutcome.PlayerWinsMatch
-                ? "You Win the Match!"
-                : "Bot Wins the Match";
+                ? (MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 1 Wins the Match!" : "You Win the Match!")
+                : (MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2 Wins the Match!" : "Bot Wins the Match");
             finalScoreLabel.text = $"{data.PlayerWins} - {data.BotWins}";
 
             Show();

@@ -113,7 +113,7 @@ namespace PokerDice
                 _turnRoutine = null;
             }
 
-            if (newOwner == TurnOwner.Bot)
+            if (newOwner == TurnOwner.Bot && MatchLaunchOptions.Mode == MatchMode.VsBot)
             {
                 _turnRoutine = StartCoroutine(RunBotTurn());
             }

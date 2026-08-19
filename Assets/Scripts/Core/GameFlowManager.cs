@@ -22,6 +22,7 @@ namespace PokerDice
         private Action _pendingTurnResultContinuation;
 
         public event Action<int, int> OnScoreChanged;
+        public event Action<PokerHandResult> OnOpeningSeatFinished;
 
         private void Start()
         {
@@ -146,6 +147,7 @@ namespace PokerDice
             }
 
             _botFinalHand = finalHand;
+            OnOpeningSeatFinished?.Invoke(_botFinalHand);
 
             _pendingTurnResultContinuation = () =>
             {
@@ -153,7 +155,7 @@ namespace PokerDice
                 TurnAuthority.Instance.SetTurnOwner(TurnOwner.Player);
             };
 
-            turnResultPopup.ShowResult("Bot's Turn", PokerHandNameFormatter.Format(_botFinalHand.Category));
+            turnResultPopup.ShowResult(GetTurnLabel(TurnOwner.Bot), PokerHandNameFormatter.Format(_botFinalHand.Category));
         }
 
         private void HandlePlayerFinishedTurn()
@@ -163,14 +165,46 @@ namespace PokerDice
                 return;
             }
 
-            _playerFinalHand = rollMultipleDice.EvaluateDetailedHand();
-
-            _pendingTurnResultContinuation = () =>
+            if (TurnAuthority.Instance == null)
             {
-                ResolveRound();
-            };
+                Debug.LogWarning("GameFlowManager: TurnAuthority.Instance is null in HandlePlayerFinishedTurn — ignoring event.");
+                return;
+            }
 
-            turnResultPopup.ShowResult("Your Turn", PokerHandNameFormatter.Format(_playerFinalHand.Category));
+            var finishedOwner = TurnAuthority.Instance.CurrentOwner;
+            var finishedHand = rollMultipleDice.EvaluateDetailedHand();
+
+            if (finishedOwner == TurnOwner.Player)
+            {
+                _playerFinalHand = finishedHand;
+
+                _pendingTurnResultContinuation = () => ResolveRound();
+
+                turnResultPopup.ShowResult(GetTurnLabel(TurnOwner.Player), PokerHandNameFormatter.Format(finishedHand.Category));
+            }
+            else
+            {
+                _botFinalHand = finishedHand;
+                OnOpeningSeatFinished?.Invoke(_botFinalHand);
+
+                _pendingTurnResultContinuation = () =>
+                {
+                    diceSelectionUI.ResetForNewTurn();
+                    TurnAuthority.Instance.SetTurnOwner(TurnOwner.Player);
+                };
+
+                turnResultPopup.ShowResult(GetTurnLabel(TurnOwner.Bot), PokerHandNameFormatter.Format(finishedHand.Category));
+            }
+        }
+
+        private string GetTurnLabel(TurnOwner owner)
+        {
+            if (owner == TurnOwner.Player)
+            {
+                return "Your Turn";
+            }
+
+            return MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2's Turn" : "Bot's Turn";
         }
 
         private void HandleTurnResultPopupClosed()

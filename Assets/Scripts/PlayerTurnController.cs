@@ -72,7 +72,7 @@ namespace PokerDice
 
         private void HandleRollStarted()
         {
-            if (TurnAuthority.Instance == null || TurnAuthority.Instance.CurrentOwner != TurnOwner.Player)
+            if (TurnAuthority.Instance == null || !MatchLaunchOptions.IsHumanControlled(TurnAuthority.Instance.CurrentOwner))
             {
                 return;
             }
@@ -96,7 +96,7 @@ namespace PokerDice
                 return;
             }
 
-            if (TurnAuthority.Instance.CurrentOwner != TurnOwner.Player)
+            if (!MatchLaunchOptions.IsHumanControlled(TurnAuthority.Instance.CurrentOwner))
             {
                 return;
             }
@@ -125,7 +125,7 @@ namespace PokerDice
 
         private void HandleTurnOwnerChanged(TurnOwner newOwner)
         {
-            if (newOwner == TurnOwner.Player)
+            if (MatchLaunchOptions.IsHumanControlled(newOwner))
             {
                 ResetForNewTurn();
             }
