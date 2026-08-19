@@ -26,28 +26,20 @@ namespace PokerDice
             }
 
             gameFlowManager.OnOpeningSeatFinished += HandleOpeningSeatFinished;
-
-            if (TurnAuthority.Instance == null)
-            {
-                Debug.LogWarning($"{nameof(OpeningHandDisplay)}: TurnAuthority.Instance is null in Start — skipping subscription.");
-                return;
-            }
-
-            TurnAuthority.Instance.OnTurnOwnerChanged += HandleTurnOwnerChanged;
+            gameFlowManager.OnRoundStarted += HandleRoundStarted;
         }
 
-        private void HandleOpeningSeatFinished(PokerHandResult finalHand)
+        private void HandleOpeningSeatFinished(TurnOwner owner, PokerHandResult finalHand)
         {
-            string prefix = MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2: " : "Bot: ";
+            string prefix = owner == TurnOwner.Player
+                ? "You: "
+                : (MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2: " : "Bot: ");
             text.text = $"{prefix}{PokerHandNameFormatter.Format(finalHand.Category)}\n{FormatFaces(finalHand.Faces)}";
         }
 
-        private void HandleTurnOwnerChanged(TurnOwner newOwner)
+        private void HandleRoundStarted()
         {
-            if (newOwner == TurnOwner.Bot)
-            {
-                text.text = "";
-            }
+            text.text = "";
         }
 
         private static string FormatFaces(int[] faces)
@@ -66,11 +58,7 @@ namespace PokerDice
             if (gameFlowManager != null)
             {
                 gameFlowManager.OnOpeningSeatFinished -= HandleOpeningSeatFinished;
-            }
-
-            if (TurnAuthority.Instance != null)
-            {
-                TurnAuthority.Instance.OnTurnOwnerChanged -= HandleTurnOwnerChanged;
+                gameFlowManager.OnRoundStarted -= HandleRoundStarted;
             }
         }
     }

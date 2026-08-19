@@ -20,9 +20,12 @@ namespace PokerDice
         private int _playerWins;
         private bool _matchOver;
         private Action _pendingTurnResultContinuation;
+        private TurnOwner _nextRoundOpener = TurnOwner.Player;
+        private TurnOwner _currentRoundOpener;
 
         public event Action<int, int> OnScoreChanged;
-        public event Action<PokerHandResult> OnOpeningSeatFinished;
+        public event Action OnRoundStarted;
+        public event Action<TurnOwner, PokerHandResult> OnOpeningSeatFinished;
 
         private void Start()
         {
@@ -136,65 +139,64 @@ namespace PokerDice
                 return;
             }
 
-            TurnAuthority.Instance.SetTurnOwner(TurnOwner.Bot);
+            _currentRoundOpener = _nextRoundOpener;
+            _nextRoundOpener = _nextRoundOpener == TurnOwner.Player ? TurnOwner.Bot : TurnOwner.Player;
+
+            OnRoundStarted?.Invoke();
+            TurnAuthority.Instance.SetTurnOwner(_currentRoundOpener);
         }
 
         private void HandleBotFinishedTurn(PokerHandResult finalHand)
         {
-            if (_matchOver)
-            {
-                return;
-            }
-
-            _botFinalHand = finalHand;
-            OnOpeningSeatFinished?.Invoke(_botFinalHand);
-
-            _pendingTurnResultContinuation = () =>
-            {
-                diceSelectionUI.ResetForNewTurn();
-                TurnAuthority.Instance.SetTurnOwner(TurnOwner.Player);
-            };
-
-            turnResultPopup.ShowResult(GetTurnLabel(TurnOwner.Bot), PokerHandNameFormatter.Format(_botFinalHand.Category));
+            HandleTurnFinished(TurnOwner.Bot, finalHand);
         }
 
         private void HandlePlayerFinishedTurn()
         {
-            if (_matchOver)
-            {
-                return;
-            }
-
             if (TurnAuthority.Instance == null)
             {
                 Debug.LogWarning("GameFlowManager: TurnAuthority.Instance is null in HandlePlayerFinishedTurn — ignoring event.");
                 return;
             }
 
-            var finishedOwner = TurnAuthority.Instance.CurrentOwner;
-            var finishedHand = rollMultipleDice.EvaluateDetailedHand();
+            HandleTurnFinished(TurnAuthority.Instance.CurrentOwner, rollMultipleDice.EvaluateDetailedHand());
+        }
+
+        private void HandleTurnFinished(TurnOwner finishedOwner, PokerHandResult finishedHand)
+        {
+            if (_matchOver)
+            {
+                return;
+            }
 
             if (finishedOwner == TurnOwner.Player)
             {
                 _playerFinalHand = finishedHand;
-
-                _pendingTurnResultContinuation = () => ResolveRound();
-
-                turnResultPopup.ShowResult(GetTurnLabel(TurnOwner.Player), PokerHandNameFormatter.Format(finishedHand.Category));
             }
             else
             {
                 _botFinalHand = finishedHand;
-                OnOpeningSeatFinished?.Invoke(_botFinalHand);
+            }
 
+            if (finishedOwner == _currentRoundOpener)
+            {
+                TurnOwner nextOwner = finishedOwner == TurnOwner.Player ? TurnOwner.Bot : TurnOwner.Player;
                 _pendingTurnResultContinuation = () =>
                 {
                     diceSelectionUI.ResetForNewTurn();
-                    TurnAuthority.Instance.SetTurnOwner(TurnOwner.Player);
+                    if (TurnAuthority.Instance != null)
+                    {
+                        TurnAuthority.Instance.SetTurnOwner(nextOwner);
+                    }
                 };
-
-                turnResultPopup.ShowResult(GetTurnLabel(TurnOwner.Bot), PokerHandNameFormatter.Format(finishedHand.Category));
+                OnOpeningSeatFinished?.Invoke(finishedOwner, finishedHand);
             }
+            else
+            {
+                _pendingTurnResultContinuation = () => ResolveRound();
+            }
+
+            turnResultPopup.ShowResult(GetTurnLabel(finishedOwner), PokerHandNameFormatter.Format(finishedHand.Category));
         }
 
         private string GetTurnLabel(TurnOwner owner)
