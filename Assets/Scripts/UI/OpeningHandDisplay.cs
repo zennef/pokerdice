@@ -32,7 +32,7 @@ namespace PokerDice
         private void HandleOpeningSeatFinished(TurnOwner owner, PokerHandResult finalHand)
         {
             string prefix = owner == TurnOwner.Player
-                ? "You: "
+                ? (MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 1: " : "You: ")
                 : (MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2: " : "Bot: ");
             text.text = $"{prefix}{PokerHandNameFormatter.Format(finalHand.Category)}\n{FormatFaces(finalHand.Faces)}";
         }

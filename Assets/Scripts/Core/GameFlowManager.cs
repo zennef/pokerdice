@@ -203,7 +203,7 @@ namespace PokerDice
         {
             if (owner == TurnOwner.Player)
             {
-                return "Your Turn";
+                return MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 1's Turn" : "Your Turn";
             }
 
             return MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2's Turn" : "Bot's Turn";

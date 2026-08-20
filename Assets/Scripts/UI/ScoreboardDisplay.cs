@@ -28,7 +28,7 @@ namespace PokerDice
 
         private void HandleScoreChanged(int playerWins, int botWins)
         {
-            text.text = $"Bot {botWins} - {playerWins} Player";
+            text.text = $"{playerWins} - {botWins}";
         }
 
         private void OnDestroy()

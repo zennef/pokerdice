@@ -36,9 +36,9 @@ namespace PokerDice
             switch (outcome)
             {
                 case RoundOutcome.PlayerWins:
-                    return "You Win!";
+                    return MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 1 Wins!" : "You Win!";
                 case RoundOutcome.BotWins:
-                    return "Bot Wins";
+                    return MatchLaunchOptions.Mode == MatchMode.Hotseat ? "Player 2 Wins!" : "Bot Wins";
                 case RoundOutcome.Tie:
                     return "Tie";
                 default:
