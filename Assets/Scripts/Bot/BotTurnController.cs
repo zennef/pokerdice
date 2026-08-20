@@ -150,6 +150,11 @@ namespace PokerDice
                 targetFaces[i] = GetTargetFace(i);
             }
 
+            for (int i = 0; i < 5; i++)
+            {
+                diceSelectionUI.SetDieRollingVisual(i);
+            }
+
             yield return RollAndWait(shouldRoll, targetFaces);
 
             while (rerollsUsed < maxRerolls)
@@ -193,6 +198,10 @@ namespace PokerDice
                 for (int i = 0; i < 5; i++)
                 {
                     diceSelectionUI.SetDieHeldVisual(i, false);
+                    if (!holds[i])
+                    {
+                        diceSelectionUI.SetDieRollingVisual(i);
+                    }
                 }
 
                 rerollsUsed++;

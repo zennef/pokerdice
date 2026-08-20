@@ -65,6 +65,11 @@ namespace PredictedDice
                 elapsedTime += Time.fixedDeltaTime;
                 yield return new WaitForFixedUpdate();
             }
+
+            var finalPose = poses[targetPoint];
+            _rb.MovePosition(finalPose.position);
+            _rb.MoveRotation(finalPose.rotation);
+
             onComplete?.Invoke();
         }
 

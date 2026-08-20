@@ -219,7 +219,7 @@ namespace PokerDice
                 shouldRoll[i] = !_held[i];
                 if (shouldRoll[i])
                 {
-                    slot.faceLabel.text = "–";
+                    SetDieRollingVisual(i);
                     targetFaces[i] = diceRollOverride.TryGetForcedFace(TurnOwner.Player, i, out var forced)
                         ? forced
                         : UnityEngine.Random.Range(1, 7);
@@ -254,6 +254,11 @@ namespace PokerDice
             }
 
             skipButton.interactable = true;
+        }
+
+        public void SetDieRollingVisual(int index)
+        {
+            dieSlots[index].faceLabel.text = "–";
         }
 
         public void SetDieHeldVisual(int index, bool held)
